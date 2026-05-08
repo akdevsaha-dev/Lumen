@@ -3,17 +3,18 @@ import { Queue } from "bullmq";
 const getRedisConnection = () => {
   const url = process.env.REDIS_URL;
   if (url) {
-    console.log("[BullMQ] Using REDIS_URL from environment");
+    console.log("[BullMQ] Found REDIS_URL, initializing connection...");
     return url;
   }
 
+  const errorMsg = "FATAL ERROR: REDIS_URL missing for BullMQ in environment!";
+  console.error(errorMsg);
+  
   if (process.env.RENDER || process.env.NODE_ENV === "production") {
-    console.error("!!! ERROR: REDIS_URL missing for BullMQ in production !!!");
-    return { host: "REDIS_URL_MISSING_FROM_ENV", port: 6379 };
+    throw new Error(errorMsg);
   }
 
-  console.log("[BullMQ] No REDIS_URL found, falling back to localhost");
-  return { host: "localhost", port: 6379 };
+  return { host: "REDIS_NOT_CONFIGURED", port: 6379 };
 };
 
 export const redisConnection = getRedisConnection();

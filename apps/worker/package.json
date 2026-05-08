@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsup src/index.ts --format esm --clean --out-dir dist && go build -o engine ../../services/engine/main.go",
+    "build": "tsup src/index.ts --format esm --clean --out-dir dist && (command -v go >/dev/null 2>&1 && (cd ../../services/engine && go build -o ../../apps/worker/engine main.go) || echo 'Go not found, skipping engine build')",
     "start": "node dist/index.js",
     "lint": "eslint .",
     "type-check": "tsc --noEmit"
