@@ -8,6 +8,7 @@ import projectRouter from "./routes/project.route";
 import targetRouter from "./routes/target.route";
 import auditRouter from "./routes/audit.route";
 import { connectRedis } from "@repo/lib";
+import "./worker/audit.worker";
 
 const PORT = config.port;
 async function start() {
