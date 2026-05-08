@@ -5,6 +5,9 @@ export default defineConfig({
   format: ["esm"],
   clean: true,
   outDir: "dist",
+  platform: "node",
+  target: "node22",
+  shims: true,
   noExternal: [
     "@repo/database",
     "@repo/lib",
