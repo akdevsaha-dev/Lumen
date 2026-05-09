@@ -2,8 +2,10 @@ package prober
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 	"net/http/httptrace"
+	"os"
 	"time"
 )
 
@@ -45,9 +47,15 @@ func TraceURL(url string) (*ProbeMetrics, error) {
 
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	start := time.Now()
-	resp, err := http.DefaultClient.Do(req)
+	
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
+	
+	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		fmt.Fprintf(os.Stderr, "[DIAGNOSTIC] Request failed for %s: %v\n", url, err)
+		return nil, fmt.Errorf("request failed: %w", err)
 	}
 	defer resp.Body.Close()
 	total := time.Since(start)
