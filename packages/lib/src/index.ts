@@ -2,19 +2,29 @@ import { createClient, type RedisClientType } from "redis";
 
 const getRedisUrl = () => {
   const url = process.env.REDIS_URL;
-  if (url) {
-    console.log(`[Redis] Found REDIS_URL starting with: ${url.substring(0, 10)}...`);
-    return url;
+  const isProd = process.env.RENDER || process.env.NODE_ENV === "production";
+
+  if (url && url !== "undefined" && url !== "null") {
+    try {
+      const parsed = new URL(url);
+      console.log(`[Redis] Found REDIS_URL, host: ${parsed.hostname}, port: ${parsed.port || 6379}`);
+      return url;
+    } catch (e) {
+      console.warn(`[Redis] Found REDIS_URL but it is not a valid URL: ${url}`);
+      return url;
+    }
   }
-  
-  const errorMsg = "FATAL ERROR: REDIS_URL is not defined in the environment variables!";
+
+  const errorMsg = `FATAL ERROR: REDIS_URL is missing or invalid! (RENDER=${process.env.RENDER}, NODE_ENV=${process.env.NODE_ENV})`;
   console.error(errorMsg);
-  // In production/Render, we want to crash so the user knows it's misconfigured
-  if (process.env.RENDER || process.env.NODE_ENV === "production") {
+  
+  if (isProd) {
     throw new Error(errorMsg);
   }
 
-  console.warn("WARNING: No REDIS_URL found, using dummy fallback (NOT localhost)");
+  console.warn(
+    "WARNING: No REDIS_URL found, using dummy fallback (NOT localhost)",
+  );
   return "redis://REDIS_NOT_CONFIGURED_CHECK_ENV:6379";
 };
 
