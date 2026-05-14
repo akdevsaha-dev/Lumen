@@ -17,8 +17,10 @@ export default function DashboardLayout({
   }, [fetchProjects]);
 
   return (
-    <div className="flex h-screen w-full bg-[#fcfcfc] overflow-hidden font-sans text-neutral-900">
-      <Sidebar />
+    <div className="flex flex-col h-screen w-full bg-[#fcfcfc] overflow-hidden font-sans text-neutral-900 md:flex-row">
+      <div className="order-last z-50 md:order-first">
+        <Sidebar />
+      </div>
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-6 md:p-10 relative">

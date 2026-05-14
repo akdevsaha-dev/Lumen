@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Folder } from "lucide-react";
 import { axiosInstance } from "@/lib/axios";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 import { useProjectStore } from "@/store/projectStore";
 
@@ -14,11 +15,12 @@ interface CreateTargetModalProps {
 }
 
 export function CreateTargetModal({ isOpen, onClose, onSuccess }: CreateTargetModalProps) {
-  const { selectedProject } = useProjectStore();
+  const { selectedProject, projects } = useProjectStore();
   const [url, setUrl] = useState("");
   const [label, setLabel] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +64,9 @@ export function CreateTargetModal({ isOpen, onClose, onSuccess }: CreateTargetMo
             className="relative w-full max-w-md bg-white rounded-xl shadow-2xl border border-neutral-200 overflow-hidden"
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100">
-              <h2 className="font-display font-bold text-lg text-neutral-900">Add New Target</h2>
+              <h2 className="font-display font-bold text-lg text-neutral-900">
+                {projects.length === 0 ? "Project Required" : "Add New Target"}
+              </h2>
               <button
                 onClick={onClose}
                 className="text-neutral-400 hover:text-neutral-600 transition-colors"
@@ -71,7 +75,37 @@ export function CreateTargetModal({ isOpen, onClose, onSuccess }: CreateTargetMo
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
+            {projects.length === 0 ? (
+              <div className="p-8 flex flex-col items-center justify-center gap-4 text-center">
+                <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 mb-2">
+                  <Folder size={28} />
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-lg text-neutral-900">No Projects Found</h3>
+                  <p className="text-sm text-neutral-500 mt-2 max-w-[280px]">
+                    You need to create a project first before you can start adding targets to monitor.
+                  </p>
+                </div>
+                <div className="flex justify-end gap-3 mt-6 w-full">
+                  <button
+                    onClick={onClose}
+                    className="flex-1 px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      onClose();
+                      router.push("/dashboard/projects");
+                    }}
+                    className="flex-1 px-4 py-2 text-sm font-medium text-white bg-black rounded-md hover:bg-black/80 transition-colors"
+                  >
+                    Create Project
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
               {error && (
                 <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
                   {error}
@@ -135,7 +169,8 @@ export function CreateTargetModal({ isOpen, onClose, onSuccess }: CreateTargetMo
                   Add Target
                 </button>
               </div>
-            </form>
+              </form>
+            )}
           </motion.div>
         </div>
       )}

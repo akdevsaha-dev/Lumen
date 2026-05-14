@@ -12,10 +12,12 @@ type authStore = {
   isCheckingAuth: boolean;
   isSigningUp: boolean;
   isLoggingIn: boolean;
+  error: string | null;
   signup: (data: { email: string; password: string }) => Promise<boolean>;
   signin: (data: { email: string; password: string }) => Promise<boolean>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+  clearError: () => void;
 };
 
 export const useAuthStore = create<authStore>((set) => ({
@@ -23,9 +25,10 @@ export const useAuthStore = create<authStore>((set) => ({
   isCheckingAuth: true,
   isSigningUp: false,
   isLoggingIn: false,
+  error: null,
 
   signup: async (data) => {
-    set({ isSigningUp: true });
+    set({ isSigningUp: true, error: null });
     try {
       const res = await axiosInstance.post<ApiResponse<User>>(
         "/auth/signup",
@@ -33,8 +36,8 @@ export const useAuthStore = create<authStore>((set) => ({
       );
       set({ authUser: res.data.data });
       return res.data.success;
-    } catch (error) {
-      console.error("Signup error:", error);
+    } catch (error: any) {
+      set({ error: error.response?.data?.message || "Something went wrong during signup" });
       return false;
     } finally {
       set({ isSigningUp: false });
@@ -42,7 +45,7 @@ export const useAuthStore = create<authStore>((set) => ({
   },
 
   signin: async (data) => {
-    set({ isLoggingIn: true });
+    set({ isLoggingIn: true, error: null });
     try {
       const res = await axiosInstance.post<ApiResponse<User>>(
         "/auth/signin",
@@ -50,8 +53,8 @@ export const useAuthStore = create<authStore>((set) => ({
       );
       set({ authUser: res.data.data });
       return res.data.success;
-    } catch (error) {
-      console.error("Signin error:", error);
+    } catch (error: any) {
+      set({ error: error.response?.data?.message || "Invalid email or password" });
       return false;
     } finally {
       set({ isLoggingIn: false });
@@ -63,7 +66,6 @@ export const useAuthStore = create<authStore>((set) => ({
       await axiosInstance.post<ApiResponse<null>>("/auth/signout");
       set({ authUser: null });
     } catch (error) {
-      console.error("Logout error:", error);
     }
   },
 
@@ -78,4 +80,6 @@ export const useAuthStore = create<authStore>((set) => ({
       set({ isCheckingAuth: false });
     }
   },
+
+  clearError: () => set({ error: null }),
 }));

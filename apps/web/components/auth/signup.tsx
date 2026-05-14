@@ -9,15 +9,39 @@ import { useState } from "react";
 export const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signup, isSigningUp } = useAuthStore();
+  const [localError, setLocalError] = useState("");
+  const { signup, isSigningUp, error, clearError } = useAuthStore();
   const router = useRouter();
 
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
+
   const handleSignUp = async () => {
+    setLocalError("");
+    clearError();
+
+    if (!email || !validateEmail(email)) {
+      setLocalError("Please enter a valid email address");
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      setLocalError("Password must be at least 6 characters long");
+      return;
+    }
+
     const success = await signup({ email, password });
     if (success) {
       router.push("/dashboard");
     }
   };
+
+  const displayError = localError || error;
 
   return (
     <main className="relative min-h-screen w-full bg-white overflow-hidden flex items-center justify-center font-sans">
@@ -40,6 +64,12 @@ export const SignUp = () => {
         </div>
 
         <div className="flex flex-col gap-5">
+          {displayError && (
+            <div className="text-xs font-medium text-red-600 bg-red-50 p-3 border border-red-100 rounded-sm">
+              {displayError}
+            </div>
+          )}
+
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-mono tracking-widest uppercase text-neutral-500">
               Email Address
@@ -49,7 +79,11 @@ export const SignUp = () => {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (localError) setLocalError("");
+                  if (error) clearError();
+                }}
                 placeholder="name@company.com"
                 className="w-full h-full text-sm outline-none bg-transparent text-neutral-900 placeholder:text-neutral-400"
               />
@@ -65,7 +99,11 @@ export const SignUp = () => {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (localError) setLocalError("");
+                  if (error) clearError();
+                }}
                 placeholder="••••••••"
                 className="w-full h-full text-sm outline-none bg-transparent text-neutral-900 placeholder:text-neutral-400"
               />
@@ -75,7 +113,7 @@ export const SignUp = () => {
 
         <button
           onClick={handleSignUp}
-          disabled={isSigningUp || !email || !password}
+          disabled={isSigningUp}
           className="bg-black hover:bg-neutral-800 text-white h-12 flex items-center justify-center gap-2 w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
         >
           <span className="font-light text-sm">Create Account</span>

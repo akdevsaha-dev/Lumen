@@ -82,7 +82,7 @@ export const Observability = () => {
             <div className="uppercase text-[10px] font-mono font-light text-neutral-400 tracking-widest">
               REQUESTS PROBED
             </div>
-            <div className="mt-3 tracking-tight text-4xl font-extrabold font-display">
+            <div className="mt-3 tracking-tight text-3xl sm:text-4xl font-extrabold font-display">
               2,840,372
             </div>
             <div className="flex items-center text-xs gap-1.5 mt-2 font-mono">
@@ -95,7 +95,7 @@ export const Observability = () => {
             <div className="uppercase text-[10px] font-mono font-light text-neutral-400 tracking-widest">
               ENDPOINTS MONITORED
             </div>
-            <div className="mt-3 tracking-tight text-4xl font-extrabold font-display">
+            <div className="mt-3 tracking-tight text-3xl sm:text-4xl font-extrabold font-display">
               184
             </div>
             <div className="flex items-center text-xs gap-1.5 mt-2 font-mono">
@@ -108,7 +108,7 @@ export const Observability = () => {
             <div className="uppercase text-[10px] font-mono font-light text-neutral-400 tracking-widest">
               MEDIAN P95 (MS)
             </div>
-            <div className="mt-3 tracking-tight text-4xl font-extrabold font-display">
+            <div className="mt-3 tracking-tight text-3xl sm:text-4xl font-extrabold font-display">
               146
             </div>
             <div className="flex items-center text-xs gap-1.5 mt-2 font-mono">
@@ -121,7 +121,7 @@ export const Observability = () => {
             <div className="uppercase text-[10px] font-mono font-light text-neutral-400 tracking-widest">
               REGRESSIONS CAUGHT
             </div>
-            <div className="mt-3 tracking-tight text-4xl font-extrabold font-display">
+            <div className="mt-3 tracking-tight text-3xl sm:text-4xl font-extrabold font-display">
               38
             </div>
             <div className="flex items-center text-xs gap-1.5 mt-2 font-mono">
